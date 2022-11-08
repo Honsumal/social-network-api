@@ -4,8 +4,8 @@ const {formatDate} = require('../utils/helpers')
 const reactionSchema = new Schema (
     {
         reactionId: {
-            type: ObjectId,
-            default: new ObjectId
+            type: ObjectId, //may be issue
+            default: new ObjectId //may be issue
         },
         reactionBody: {
             type: String,
