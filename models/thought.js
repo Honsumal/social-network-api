@@ -1,11 +1,12 @@
-const { Schema, model, ObjectId } = require('mongoose');
+const { Schema, model} = require('mongoose');
+const { ObjectId } = require('mongoose').Types
 const {formatDate} = require('../utils/helpers')
 
 const reactionSchema = new Schema (
     {
         reactionId: {
-            type: ObjectId, //may be issue
-            default: new ObjectId //may be issue
+            type: ObjectId,
+            default: new ObjectId 
         },
         reactionBody: {
             type: String,
@@ -60,4 +61,6 @@ thoughtSchema.virtual('reactionCount').get(function () {
 
 const Thought = model('thought', thoughtSchema);
 
-module.exports = Thought
+const Reaction = model('reaction', reactionSchema)
+
+module.exports = Thought, Reaction

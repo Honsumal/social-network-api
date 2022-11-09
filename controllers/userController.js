@@ -8,10 +8,12 @@ module.exports = {
     },
     getSingleUser(req, res) {
         User.findOne({ _id: req.body.userId})
-        .then((post) => 
-        !post
+        .populate('thoughts')
+        .populate('friends')
+        .then((user) => 
+        !user
             ? res.status(400).json({ message: 'no user with that id'})
-            : res.json(post)
+            : res.json(user)
         )
         .catch((err) => res.status(500).json(err))
     },
@@ -22,7 +24,7 @@ module.exports = {
     },
     updateUser(req, res) {
         User.findByIdAndUpdate(
-            {_id: req.body.userId}, 
+            {_id: req.params.userId}, 
             {username: req.body.username, email: req.body.email},
             {new: true},
         )
@@ -30,10 +32,18 @@ module.exports = {
         .catch((err) => res.status(500).json(err))
     },
     deleteUser(req, res) {
-        User.findByIdAndDelete({_id: req.body.userId})
-            .then((userData) => 
-                Thought.deleteMany({username: userData.username})) //take out if is doesnt work
-                .catch((err) => res.status(500).json(err))
+        User.findByIdAndDelete({_id: req.params.userId})
+            .then((user) => 
+                !user
+                ? res.status(404).json({message: 'no user found'})
+                : Thought.deleteMany({username: user.username}) //may need to do in reverse
+            )
+            .then((user) =>
+            ! user
+            ? res.status(404).json({message: 'User deleted but no thoughts found'})
+          : res.json({ message: 'User and thoughts successfully deleted' })
+      )
+            .catch((err) => res.status(500).json(err))
     },
     addFriend(req, res) {
         User.findByIdAndUpdate(
