@@ -20,11 +20,11 @@ connection.once('open', async () => {
 
   await User.collection.insertMany(userData)
 
-  await Thought.collection.insertMany(thoughtData)
+  // await Thought.collection.insertMany(thoughtData)
 
-  await Reaction.collection.insertMany(rxnData)
+  // await Reaction.collection.insertMany(rxnData)
 
-  console.table(userData)
+  // console.table(userData)
   console.info('Seeding Complete')
   process.exit(0)
 });

@@ -24,7 +24,8 @@ const reactionSchema = new Schema (
                 if (date) return formatDate(date)
             } 
         }
-    }
+    },
+    {id: false}
 )
 
 const thoughtSchema = new Schema(
@@ -52,6 +53,7 @@ const thoughtSchema = new Schema(
         toJSON: {
             virtuals: true,
         },
+        id: false
     }
 );
 

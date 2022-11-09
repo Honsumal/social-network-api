@@ -1,4 +1,4 @@
-const{Thought, Reaction} = require('../models')
+const{Thought, User} = require('../models')
 
 module.exports = {
     getThoughts (req, res) {
@@ -16,33 +16,62 @@ module.exports = {
     },
     createThought (req, res) {
         Thought.create(req.body)
-            .then((thoughtData) => res.json(thoughtData))
+            .then((thoughtData) => 
+            ! thoughtData
+                ? res.status(404).json({message:'thought not found'})
+                : User.findOneAndUpdate(
+                    { username: req.body.username },
+                    { $addToSet: {thoughts: thoughtData}},
+                    { new: true}
+                )
+            )
+            .then((s) => 
+                !s
+                    ? res.status(404).json({ message: 'error'})
+                    : res.json({ message: 'Thought added'}))
             .catch((err) => res.status(500).json(err))
     },
     updateThought (req, res) {
         Thought.findByIdAndUpdate(
-            {_id: req.params.thoughtId},
-            {thoughtText: req.body},
-            {new: true},
+            { _id: req.params.thoughtId},
+            { thoughtText: req.body.thoughtText},
+            { new: true},
         )
         .then((thoughtData) => res.json(thoughtData))
         .catch((err) => res.status(500).json(err))
     },
     deleteThought (req, res) {
-        Thought.findByIdAndDelete({_id: req.params.thoughtId})
+        Thought.findByIdAndRemove({_id: req.params.thoughtId})
+            .then((thoughtData) => 
+            ! thoughtData
+            ? res.status(404).json({message:'thought not found'})
+            : User.findOneAndUpdate(
+                { username: req.body.username },
+                { $pull: {thoughts: req.params.thoughtId}},
+                { new: true}
+            )
+        )
+        .then((s) => 
+            !s
+                ? res.status(404).json({ message: 'error'})
+                : res.json({ message: 'Thought deleted'}))
+        .catch((err) => res.status(500).json(err))
+    },
+    createReaction (req, res) {
+        Thought.findOneAndUpdate (
+            { _id: req.params.thoughtId},
+            { $addToSet: {reactions: req.body}},
+            { new: true}
+        )
             .then((thought) => res.json(thought))
             .catch((err) => res.status(500).json(err))
     },
-    createReaction (req, res) {
-        Reaction.create(req.body)
-            .then((rxn) => res.json(rxn))
-            .catch((err) => res.status(500).json(err))
-    },
     deleteReaction (req, res) {
-        Reaction.findByIdAndDelete({_id:req.params.reactionId})
-            .then((rxn) => res.json(rxn))
+        Thought.findOneAndUpdate (
+            { _id: req.params.thoughtId},
+            { $pull: {reactions: {_id: req.params.reactionId}}},
+            { new: true})
+            .then((thought) => res.json(thought))
             .catch((err) => res.status(500).json(err))
     },
 }
-
-//TODO
