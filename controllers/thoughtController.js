@@ -25,10 +25,10 @@ module.exports = {
             {thoughtText: req.body},
             {new: true},
         )
-        .then((thoughtData) => res.json(thoughData))
+        .then((thoughtData) => res.json(thoughtData))
         .catch((err) => res.status(500).json(err))
     },
-    deletePost (req, res) {
+    deleteThought (req, res) {
         Thought.findByIdAndDelete({_id: req.params.thoughtId})
             .then((thought) => res.json(thought))
             .catch((err) => res.status(500).json(err))
