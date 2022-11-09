@@ -1,4 +1,4 @@
-# Tech Blog
+# Social Networking API
 
 ## Description
 
